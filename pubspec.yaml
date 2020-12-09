@@ -1,7 +1,6 @@
 name: float_button_overlay
 description: A Flutter plugin to keep app service background visible like a Float Action Button
 version: 0.0.1
-author: Nilton Diniz <niltondiniz@niltondiniz.com>
 homepage: https://github.com/niltondiniz/float_button_overlay
 
 environment:
