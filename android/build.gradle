@@ -1,0 +1,50 @@
+group 'br.ndz.float_button_overlay'
+version '1.0'
+
+rootProject.allprojects {
+    repositories {
+
+    }
+}
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath 'com.google.gms:google-services:4.2.0'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+apply plugin: 'com.android.library'
+
+
+android {
+    compileSdkVersion 29
+
+    defaultConfig {
+        minSdkVersion 16
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+}
+
+dependencies {
+    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
+    implementation 'androidx.core:core:1.2.0'
+    //api "io.flutter:flutter_embedding_debug:1.0.0-d1bc06f032f9d6c148ea6b96b48261d6f545004f"
+}
+
+

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="br.ndz.float_button_overlay">
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <application>
+        <service
+            android:name=".services.FloatButtonService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.FOREGROUND_SERVICE">
+        </service>
+    </application>
+
+</manifest>
