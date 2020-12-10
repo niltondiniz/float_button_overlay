@@ -62,6 +62,7 @@ class FloatButtonOverlay {
           }
           break;
       }
+      return Future.value(true);
     });
     return true;
   }
