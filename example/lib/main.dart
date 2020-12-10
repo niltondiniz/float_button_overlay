@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:float_button_overlay/float_button_overlay.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -8,17 +7,6 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
-
-// ignore: missing_return
-Future<String> getHttp() async {
-  try {
-    var response = await Dio().get("http://www.google.com");
-    print(response);
-    return response.toString();
-  } catch (e) {
-    print(e);
-  }
-}
 
 Future<File> getImageFileFromAssets(String path) async {
   final byteData = await rootBundle.load('assets/$path');
@@ -32,12 +20,10 @@ Future<File> getImageFileFromAssets(String path) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
   var file = await getImageFileFromAssets('ic_floatbutton.jpg');
-
-  FloatButtonOverlay.registerClickToOpenApp(
+  FloatButtonOverlay.initialize(
       file.path, packageInfo.packageName, "MainActivity");
 
   runApp(MyApp());
@@ -50,11 +36,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-
-  String appName = "";
-  String packageName = "";
-  String version = "";
-  String buildNumber = "";
 
   @override
   void initState() {
