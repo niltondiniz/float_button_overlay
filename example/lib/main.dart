@@ -20,6 +20,7 @@ Future<File> getImageFileFromAssets(String path) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
   var file = await getImageFileFromAssets('ic_floatbutton.jpg');
@@ -69,7 +70,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Float Button Overlay - Example'),
         ),
         body: Center(
           child: Column(
