@@ -12,17 +12,17 @@ A Flutter plugin to keep app service background visible like a Float Action Butt
 
 2- call CheckPermissions method
 
-  @override
-  void initState() {
-    super.initState();
-    initPlatformState();
-  }
+    @override
+    void initState() {
+      super.initState();
+      initPlatformState();
+    }
 
-  Future<void> initPlatformState() async {
-    try {
-      FloatButtonOverlay.checkPermissions;
-    } on PlatformException {}
-  }
+    Future<void> initPlatformState() async {
+      try {
+        FloatButtonOverlay.checkPermissions;
+      } on PlatformException {}
+    }
 
 3- On Main.dart main method:
 
