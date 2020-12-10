@@ -4,7 +4,7 @@ A Flutter plugin to keep app service background visible like a Float Action Butt
 
 ##Example of Float Button Overlay
 
-![example](https://raw.githubusercontent.com/niltondiniz/float_button_overlay/main/example/assets/example.gif "example")
+![example](https://raw.githubusercontent.com/niltondiniz/float_button_overlay/main/example/assets/example_2.gif "example")
 
 ## Getting Started
 
