@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -34,13 +35,12 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import br.ndz.float_button_overlay.R;
-
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import br.ndz.float_button_overlay.R;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.dart.DartExecutor;
 import io.flutter.plugin.common.MethodChannel;
@@ -64,6 +64,7 @@ public class FloatButtonService extends Service {
 
     private MyReceiver myReceiver = new MyReceiver();
     private WindowManager mWindowManager;
+    private ImageView imageView;
     private RelativeLayout mFloatingWidget;
     private long startClickTime;
     private WindowManager.LayoutParams params;
@@ -71,6 +72,8 @@ public class FloatButtonService extends Service {
     private int endArea = 0;
     private Timer timer;
     private TimerTask timerTask;
+    Display display;
+    Point floatButtonsize;
 
     private final IBinder mBinder = new LocalBinder();
     private static final int NOTIFICATION_ID = 1326875;
@@ -91,9 +94,14 @@ public class FloatButtonService extends Service {
             private int initialY;
             private float initialTouchX;
             private float initialTouchY;
+            private int initialWidth;
+            private int initialHeight;
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+
+                initialHeight = mFloatingWidget.getHeight();
+                initialWidth = mFloatingWidget.getWidth();
 
                 switch (event.getAction()) {
 
@@ -104,6 +112,8 @@ public class FloatButtonService extends Service {
                         initialTouchX = event.getRawX();
                         initialTouchY = event.getRawY();
 
+                        animateButton(1.1f, 1.1f);
+
                         //Getting press time
                         startClickTime = Calendar.getInstance().getTimeInMillis();
                         return false;
@@ -112,6 +122,8 @@ public class FloatButtonService extends Service {
 
                         int Xdiff = (int) (event.getRawX() - initialTouchX);
                         int Ydiff = (int) (event.getRawY() - initialTouchY);
+
+                        animateButton(1f, 1f);
 
                         if (params.y >= endArea) {
                             params.alpha = 1;
@@ -186,6 +198,16 @@ public class FloatButtonService extends Service {
                 return false;
             }
         });
+    }
+
+    private void animateButton(float scaleX, float scaleY) {
+        imageView.animate()
+                .setStartDelay(1000) //prevent the animation from starting
+                .scaleY(scaleY)
+                .scaleX(scaleX)
+                .setDuration((long) 100f)
+                .setStartDelay(0)
+                .start();
     }
 
     private void StartAppIntent(String packageName, String activityName) {
@@ -299,7 +321,6 @@ public class FloatButtonService extends Service {
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mFloatingWidget.findViewById(R.id.button1);
 
-
         channel.invokeMethod("seticon", null, new MethodChannel.Result() {
             @Override
             public void success(@Nullable Object result) {
@@ -307,7 +328,7 @@ public class FloatButtonService extends Service {
                 HashMap<String, String> data = (HashMap<String, String>) result;
                 RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(150, 150);
                 lp.addRule(RelativeLayout.CENTER_IN_PARENT);
-                ImageView imageView = new ImageView(getApplicationContext());
+                imageView = new ImageView(getApplicationContext());
                 imageView.setLayoutParams(lp);
                 imageView.setImageBitmap(BitmapFactory.decodeFile(data.get("iconPath")));
                 mFloatingWidget.addView(imageView);
@@ -318,10 +339,10 @@ public class FloatButtonService extends Service {
                  * The close area corresponds to screen height - 20%
                  *
                  * */
-                Display display = mWindowManager.getDefaultDisplay();
-                Point size = new Point();
-                display.getSize(size);
-                maxY = size.y;
+                display = mWindowManager.getDefaultDisplay();
+                floatButtonsize = new Point();
+                display.getSize(floatButtonsize);
+                maxY = floatButtonsize.y;
                 endArea = maxY - (int) (maxY * 0.20);
             }
 
@@ -335,7 +356,6 @@ public class FloatButtonService extends Service {
 
             }
         });
-
 
     }
 

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 typedef String OnClickListener(String tag);
@@ -28,17 +27,16 @@ class FloatButtonOverlay {
     return retorno;
   }
 
-  /**
-   * 
-   * Initialize
-   * iconPath: Path of image to set in ImageView of Float Button
-   * packageName: Package Name of the app you want to open on click
-   * activityName: Activity on your app that represents the main activity
-   * 
-   * Two callbacks are defined:
-   * callback: Called on click, used to open the app
-   * seticon: Called on show float button, will set the image to ImageView of Float button
-   */
+  ///
+
+  /// Initialize
+  /// iconPath: Path of image to set in ImageView of Float Button
+  /// packageName: Package Name of the app you want to open on click
+  /// activityName: Activity on your app that represents the main activity
+  ///
+  /// Two callbacks are defined:
+  /// callback: Called on click, used to open the app
+  /// seticon: Called on show float button, will set the image to ImageView of Float button
 
   static Future<bool> initialize(
       String iconPath, String packageName, String activityName) async {

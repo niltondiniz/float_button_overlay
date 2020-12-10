@@ -1,3 +1,7 @@
+## 0.1.2
+
+* TODO: Solved lints, onClick visual callback.
+
 ## 0.1.1
 
 * TODO: Readme updated.

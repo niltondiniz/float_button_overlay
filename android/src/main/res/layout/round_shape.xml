@@ -1,9 +1,17 @@
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bg_floatbutton"
+    android:layout_width="90dp"
+    android:layout_height="90dp">
+
     <item>
+
         <shape android:shape="oval">
-            <size android:width="100dp"
-                android:height="100dp"/>
-            <solid android:color="#D3FBFBF8"/>
+
+            <size
+                android:width="90dp"
+                android:height="90dp" />
+
+            <solid android:color="#33FBFBF8" />
         </shape>
     </item>
 </selector>
