@@ -261,7 +261,7 @@ public class FloatButtonService extends Service {
 
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, PACKAGE);
             Notification notification = notificationBuilder.setOngoing(true)
-                    .setSmallIcon(R.drawable.ic_notification)
+                    .setSmallIcon(R.drawable.ic_flutter)
                     .setContentText(NOTIFICATION_TEXT)
                     .setContentTitle(NOTIFICATION_TITLE)
                     .setPriority(NotificationManager.IMPORTANCE_MIN)
@@ -393,7 +393,7 @@ public class FloatButtonService extends Service {
                 .setContentTitle(NOTIFICATION_TITLE)
                 .setOngoing(true)
                 .setPriority(Notification.PRIORITY_HIGH)
-                .setSmallIcon(R.drawable.ic_notification)
+                .setSmallIcon(R.drawable.ic_flutter)
                 .setTicker(NOTIFICATION_TEXT)
                 .setWhen(System.currentTimeMillis())
                 .setColor(0xffffffff)
