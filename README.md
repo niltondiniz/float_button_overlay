@@ -1,8 +1,26 @@
 # float_button_overlay
 
-A new flutter plugin project.
+A Flutter plugin to keep app service background visible like a Float Action Button
 
 ## Getting Started
+
+1- import 'package:float_button_overlay/float_button_overlay.dart';
+
+2- On Main.dart main method:
+
+Future<void> main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();  
+
+  FloatButtonOverlay.initialize("/path/to/icon", packageInfo.packageName, "MainActivity");
+
+  runApp(MyApp());
+}
+
+3- Show/Hide Float Button
+
+    -Show: FloatButtonOverlay.openOverlay;
+    -Hide: FloatButtonOverlay.closeOverlay;
 
 This project is a starting point for a Flutter
 [plug-in package](https://flutter.dev/developing-packages/),
