@@ -309,7 +309,7 @@ public class FloatButtonService extends Service {
                     .setCategory(Notification.CATEGORY_SERVICE)
                     .setColor(0xffffffff);
 
-            if(iconPath != null){
+            if(iconPath == null){
                 notificationBuilder.setSmallIcon(R.drawable.ic_flutter);
             }else{
                 notificationBuilder.setSmallIcon(Icon.createWithBitmap(BitmapFactory.decodeFile(iconPath)));
@@ -401,7 +401,7 @@ public class FloatButtonService extends Service {
             builder.setChannelId(PACKAGE); // Channel ID
         }
 
-        if(iconPath != null){
+        if(iconPath == null){
             builder.setSmallIcon(R.drawable.ic_flutter);
         }else{
             builder.setSmallIcon(Icon.createWithBitmap(BitmapFactory.decodeFile(iconPath)));

@@ -4,7 +4,7 @@ A Flutter plugin to keep app service background visible like a Float Action Butt
 
 ## Example of Float Button Overlay
 
-![example](https://raw.githubusercontent.com/niltondiniz/float_button_overlay/main/example/assets/example_2.gif "example")
+![example](https://raw.githubusercontent.com/niltondiniz/float_button_overlay/main/example/assets/example_3.gif "example")
 
 ## Getting Started
 
@@ -27,14 +27,20 @@ A Flutter plugin to keep app service background visible like a Float Action Butt
 3- On Main.dart main method:
 
     void main() async {
-        WidgetsFlutterBinding.ensureInitialized();  
-        FloatButtonOverlay.initialize("/path/to/icon", packageInfo.packageName, "MainActivity");
+        WidgetsFlutterBinding.ensureInitialized();          
         runApp(MyApp());
     }
 
 4- Show/Hide Float Button
 
-    -Show: FloatButtonOverlay.openOverlay;
+  The openOverlay method sets: notificationTitle, notificationText, iconPath, packageName and activityName
+
+    -Show: FloatButtonOverlay.openOverlay(
+                      activityName: 'MainActivity',
+                      iconPath: file.path,
+                      notificationText: "Float Button Overlay ☠️",
+                      notificationTitle: 'Float Button Overlay ☠️',
+                      packageName: packageInfo.packageName);
     -Hide: FloatButtonOverlay.closeOverlay;
 
 This project is a starting point for a Flutter
