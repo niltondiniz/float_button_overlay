@@ -17,8 +17,20 @@ class FloatButtonOverlay {
     _channel.invokeMethod('checkPermissions');
   }
 
-  static Future<bool> get openOverlay async {
-    return await _channel.invokeMethod('openOverlay');
+  static Future<bool> openOverlay(
+      {String iconPath,
+      String packageName,
+      String activityName,
+      String notificationText,
+      String notificationTitle}) async {
+    final Map<String, dynamic> params = <String, String>{
+      'packageName': packageName,
+      'activityName': activityName,
+      'iconPath': iconPath,
+      'notificationTitle': notificationTitle,
+      'notificationText': notificationText
+    };
+    return await _channel.invokeMethod('openOverlay', params);
   }
 
   static Future<String> get closeOverlay async {
@@ -37,35 +49,6 @@ class FloatButtonOverlay {
   /// Two callbacks are defined:
   /// callback: Called on click, used to open the app
   /// seticon: Called on show float button, will set the image to ImageView of Float button
-
-  static Future<bool> initialize(
-      String iconPath, String packageName, String activityName) async {
-    _channel.setMethodCallHandler((MethodCall call) {
-      switch (call.method) {
-        case "callback":
-          {
-            final Map<String, dynamic> params = <String, String>{
-              'packageName': packageName,
-              'activityName': activityName
-            };
-            print(params);
-            return Future.value(params);
-          }
-          break;
-        case "seticon":
-          {
-            final Map<String, dynamic> params = <String, String>{
-              'iconPath': iconPath
-            };
-            print(params);
-            return Future.value(params);
-          }
-          break;
-      }
-      return Future.value(true);
-    });
-    return true;
-  }
 
   //Future...
   /*static Future<bool> registerClickToOpenApp(OnClickListener callBackFunction,

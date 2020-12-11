@@ -15,8 +15,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.graphics.drawable.Icon;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -27,7 +29,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -50,10 +51,10 @@ import static br.ndz.float_button_overlay.utils.Constants.BROADCAST_STATE_HIDE_F
 import static br.ndz.float_button_overlay.utils.Constants.BROADCAST_STATE_SHOW_FLOAT;
 import static br.ndz.float_button_overlay.utils.Constants.CHANNEL;
 import static br.ndz.float_button_overlay.utils.Constants.MAX_CLICK_DURATION;
-import static br.ndz.float_button_overlay.utils.Constants.NOTIFICATION_TEXT;
-import static br.ndz.float_button_overlay.utils.Constants.NOTIFICATION_TITLE;
 import static br.ndz.float_button_overlay.utils.Constants.PACKAGE;
 import static br.ndz.float_button_overlay.utils.Constants.TAG;
+
+;
 
 public class FloatButtonService extends Service {
 
@@ -61,8 +62,8 @@ public class FloatButtonService extends Service {
     FlutterEngine flutterEngine;
     MethodChannel channel;
     LocalBroadcastManager mLocalBroadcastManager;
+    FloatButtonService mService;
 
-    private MyReceiver myReceiver = new MyReceiver();
     private WindowManager mWindowManager;
     private ImageView imageView;
     private RelativeLayout mFloatingWidget;
@@ -72,6 +73,11 @@ public class FloatButtonService extends Service {
     private int endArea = 0;
     private Timer timer;
     private TimerTask timerTask;
+    private String packageName;
+    private String activityName;
+    private String iconPath;
+    private String notificatitionTitle;
+    private String notificatitionText;
     Display display;
     Point floatButtonsize;
 
@@ -85,7 +91,62 @@ public class FloatButtonService extends Service {
         flutterEngine = new FlutterEngine(this);
         flutterEngine.getDartExecutor().executeDartEntrypoint(DartExecutor.DartEntrypoint.createDefault());
         channel = new MethodChannel(flutterEngine.getDartExecutor(), CHANNEL);
-        RegisterFloatStateBroadcast();
+
+        mFloatingWidget = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.button_activity, null);
+        mFloatingWidget.findViewById(R.id.button1);
+
+    }
+
+    private void animateButton(float scaleX, float scaleY) {
+        imageView.animate()
+                .setStartDelay(1000) //prevent the animation from starting
+                .scaleY(scaleY)
+                .scaleX(scaleX)
+                .setDuration((long) 100f)
+                .setStartDelay(0)
+                .start();
+    }
+
+    private void StartAppIntent(String packageName, String activityName) {
+        ComponentName cn = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            cn = new ComponentName(packageName, packageName + "." + activityName);
+        }
+        Intent intent = new Intent();
+        intent.setComponent(cn);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+        try {
+            pendingIntent.send();
+        } catch (PendingIntent.CanceledException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        Log.i(TAG, "Service started");
+        context = getApplicationContext();
+
+        try {
+
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                Log.i(TAG, extras.toString());
+                packageName = extras.getString("packageName");
+                activityName = extras.getString("activityName");
+                iconPath = extras.getString("iconPath");
+                notificatitionText = extras.getString("notificationText");
+                notificatitionTitle = extras.getString("notificationTitle");
+            } else {
+                Log.i(TAG, "No intent Extras");
+            }
+        }catch (Exception e){
+            Log.e(TAG, e.getMessage());
+        }
+
         StartFloatButtonLayout();
 
         mFloatingWidget.setOnTouchListener(new View.OnTouchListener() {
@@ -167,25 +228,7 @@ public class FloatButtonService extends Service {
                          * */
                         long clickDuration = Calendar.getInstance().getTimeInMillis() - startClickTime;
                         if (clickDuration < MAX_CLICK_DURATION) {
-
-                            Log.i(TAG, String.valueOf(channel));
-                            channel.invokeMethod("callback", null, new MethodChannel.Result() {
-
-                                @Override
-                                public void success(@Nullable Object result) {
-                                    HashMap<String, String> data = (HashMap<String, String>) result;
-                                    StartAppIntent(data.get("packageName"), data.get("activityName"));
-                                    Log.i(TAG, "App started");
-                                }
-
-                                @Override
-                                public void error(String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
-                                }
-
-                                @Override
-                                public void notImplemented() {
-                                }
-                            });
+                            StartAppIntent(packageName, activityName);
                         }
 
                         return false;
@@ -198,40 +241,11 @@ public class FloatButtonService extends Service {
                 return false;
             }
         });
-    }
 
-    private void animateButton(float scaleX, float scaleY) {
-        imageView.animate()
-                .setStartDelay(1000) //prevent the animation from starting
-                .scaleY(scaleY)
-                .scaleX(scaleX)
-                .setDuration((long) 100f)
-                .setStartDelay(0)
-                .start();
-    }
-
-    private void StartAppIntent(String packageName, String activityName) {
-        ComponentName cn = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            cn = new ComponentName(packageName, packageName + "." + activityName);
-        }
-        Intent intent = new Intent();
-        intent.setComponent(cn);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pendingIntent =
-                PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
-        try {
-            pendingIntent.send();
-        } catch (PendingIntent.CanceledException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-
-        Log.i(TAG, "Service started");
-        context = getApplicationContext();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            startMyOwnForeground();
+        else
+            startForeground(NOTIFICATION_ID, getNotification());
 
         //Starting timer that invoke method on Flutter
         //startTimer();
@@ -240,6 +254,7 @@ public class FloatButtonService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+
         Log.i(TAG, "in onBind()");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             startMyOwnForeground();
@@ -254,6 +269,12 @@ public class FloatButtonService extends Service {
         Log.i(TAG, "in onRebind()");
         stopForeground(true);
         super.onRebind(intent);
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.i(TAG, "Unbinding Service");
+        return false;
     }
 
     @Override
@@ -274,36 +295,41 @@ public class FloatButtonService extends Service {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            NotificationChannel chan = new NotificationChannel(PACKAGE, NOTIFICATION_TITLE, NotificationManager.IMPORTANCE_NONE);
+            NotificationChannel chan = new NotificationChannel(PACKAGE, notificatitionTitle, NotificationManager.IMPORTANCE_NONE);
             chan.setLightColor(Color.YELLOW);
             chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             assert manager != null;
             manager.createNotificationChannel(chan);
 
-            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, PACKAGE);
-            Notification notification = notificationBuilder.setOngoing(true)
-                    .setSmallIcon(R.drawable.ic_flutter)
-                    .setContentText(NOTIFICATION_TEXT)
-                    .setContentTitle(NOTIFICATION_TITLE)
-                    .setPriority(NotificationManager.IMPORTANCE_MIN)
+            Notification.Builder notificationBuilder = new Notification.Builder(this, PACKAGE);
+             notificationBuilder.setOngoing(true)
+                    .setContentText(notificatitionText)
+                    .setContentTitle(notificatitionTitle)
                     .setCategory(Notification.CATEGORY_SERVICE)
-                    .setColor(0xffffffff)
-                    .build();
+                    .setColor(0xffffffff);
+
+            if(iconPath != null){
+                notificationBuilder.setSmallIcon(R.drawable.ic_flutter);
+            }else{
+                notificationBuilder.setSmallIcon(Icon.createWithBitmap(BitmapFactory.decodeFile(iconPath)));
+            }
+
+            Notification notification = notificationBuilder.build();
             startForeground(2, notification);
         }
     }
 
     private void SendBroadcastToFinishApp() {
-        Log.i(TAG, "Enviando broadcast para finalizar app");
+
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
         localBroadcastManager.sendBroadcast(new Intent(BROADCAST_FINISH_APP));
-        Log.i(TAG, "Broadcast Enviado");
+
     }
 
     private void StartFloatButtonLayout() {
 
-        mFloatingWidget = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.button_activity, null);
+
 
         params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -319,80 +345,34 @@ public class FloatButtonService extends Service {
         params.y = 100;
 
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        mFloatingWidget.findViewById(R.id.button1);
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(150, 150);
+        lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+        imageView = new ImageView(getApplicationContext());
+        imageView.setLayoutParams(lp);
+        imageView.setImageBitmap(BitmapFactory.decodeFile(iconPath));
+        mFloatingWidget.addView(imageView);
+        mWindowManager.addView(mFloatingWidget, params);
 
-        channel.invokeMethod("seticon", null, new MethodChannel.Result() {
-            @Override
-            public void success(@Nullable Object result) {
-
-                HashMap<String, String> data = (HashMap<String, String>) result;
-                RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(150, 150);
-                lp.addRule(RelativeLayout.CENTER_IN_PARENT);
-                imageView = new ImageView(getApplicationContext());
-                imageView.setLayoutParams(lp);
-                imageView.setImageBitmap(BitmapFactory.decodeFile(data.get("iconPath")));
-                mFloatingWidget.addView(imageView);
-                mWindowManager.addView(mFloatingWidget, params);
-
-                /**
-                 * Setting close area height.
-                 * The close area corresponds to screen height - 20%
-                 *
-                 * */
-                display = mWindowManager.getDefaultDisplay();
-                floatButtonsize = new Point();
-                display.getSize(floatButtonsize);
-                maxY = floatButtonsize.y;
-                endArea = maxY - (int) (maxY * 0.20);
-            }
-
-            @Override
-            public void error(String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
-
-            }
-
-            @Override
-            public void notImplemented() {
-
-            }
-        });
-
-    }
-
-    private void RegisterFloatStateBroadcast() {
-        mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
-        IntentFilter mIntentFilter = new IntentFilter();
-        mIntentFilter.addAction(BROADCAST_STATE_SHOW_FLOAT);
-        mIntentFilter.addAction(BROADCAST_STATE_HIDE_FLOAT);
-        mLocalBroadcastManager.registerReceiver(myReceiver, mIntentFilter);
-    }
-
-    public void floatingView(boolean bShow) {
-        if (!bShow) {
-            if (mFloatingWidget != null) {
-                try {
-                    mWindowManager.removeView(mFloatingWidget);
-                } catch (Exception e) {
-                    Log.i(TAG, "Erro ao setar como invisivel o floatbutton: " + e.getMessage());
-                }
-            }
-        } else {
-            try {
-                mWindowManager.addView(mFloatingWidget, params);
-            } catch (Exception e) {
-                Log.i(TAG, "Erro ao setar como visivel o floatbutton: " + e.getMessage());
-            }
-        }
+        /**
+         * Setting close area height.
+         * The close area corresponds to screen height - 20%
+         *
+         * */
+        display = mWindowManager.getDefaultDisplay();
+        floatButtonsize = new Point();
+        display.getSize(floatButtonsize);
+        maxY = floatButtonsize.y;
+        endArea = maxY - (int) (maxY * 0.20);
     }
 
     public void initializeTimerTask() {
         timerTask = new TimerTask() {
             public void run() {
-                Log.i(TAG, "Enviar event para dart");
+
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        //channel.invokeMethod("acionar_enviar_posicao", null);
+                        //channel.invokeMethod("send_position", null);
                         Log.i(TAG, "Send to Flutter");
                     }
                 });
@@ -402,26 +382,29 @@ public class FloatButtonService extends Service {
 
     private Notification getNotification() {
 
-        Intent intent = new Intent(this, FloatButtonService.class);
-
-        //PendingIntent activityPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
-        PendingIntent activityPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, FloatButtonService.class), 0);
-
-        @SuppressLint("WrongConstant") NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .addAction(0, "Abrir App", activityPendingIntent)
-                .setContentText(NOTIFICATION_TEXT)
-                .setContentTitle(NOTIFICATION_TITLE)
-                .setOngoing(true)
-                .setPriority(Notification.PRIORITY_HIGH)
-                .setSmallIcon(R.drawable.ic_flutter)
-                .setTicker(NOTIFICATION_TEXT)
-                .setWhen(System.currentTimeMillis())
-                .setColor(0xffffffff)
-                .setVisibility(Notification.VISIBILITY_SECRET);
+        Notification.Builder builder = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            builder = new Notification.Builder(this)
+                    .setContentText(notificatitionText)
+                    .setContentTitle(notificatitionTitle)
+                    .setOngoing(true)
+                    .setPriority(Notification.PRIORITY_HIGH)
+                    .setLargeIcon(BitmapFactory.decodeFile(iconPath))
+                    .setTicker(notificatitionText)
+                    .setWhen(System.currentTimeMillis())
+                    .setColor(0xffffffff)
+                    .setVisibility(Notification.VISIBILITY_SECRET);
+        }
 
         // Set the Channel ID for Android O.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder.setChannelId(PACKAGE); // Channel ID
+        }
+
+        if(iconPath != null){
+            builder.setSmallIcon(R.drawable.ic_flutter);
+        }else{
+            builder.setSmallIcon(Icon.createWithBitmap(BitmapFactory.decodeFile(iconPath)));
         }
 
         return builder.build();
@@ -437,7 +420,6 @@ public class FloatButtonService extends Service {
 
     public void startTimer() {
 
-        Log.i("HERE", "Timer Started");
         //set a new Timer
         timer = new Timer();
 
@@ -448,25 +430,10 @@ public class FloatButtonService extends Service {
         timer.schedule(timerTask, 5000, 5000); //
     }
 
-    private class MyReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            Log.i(TAG, "Received Broadcast: " + intent.getAction());
-
-            if (intent.getAction().equals(BROADCAST_STATE_SHOW_FLOAT)) {
-                floatingView(true);
-            } else if (intent.getAction().equals(BROADCAST_STATE_HIDE_FLOAT)) {
-                floatingView(false);
-            }
-        }
-    }
-
     public class LocalBinder extends Binder {
-        FloatButtonService getService() {
+        public FloatButtonService getService() {
             return FloatButtonService.this;
         }
     }
-
 
 }

@@ -4,10 +4,13 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Build;
+import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
@@ -38,7 +41,7 @@ public class FloatButtonOverlayPlugin extends Activity implements MethodCallHand
   private static Activity mActivity;
   public static int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 1237;
   private static NotificationManager notificationManager;
-
+  private FloatButtonService mService;
 
   @SuppressWarnings("unused")
   public static void registerWith(Registrar registrar) {
@@ -58,25 +61,44 @@ public class FloatButtonOverlayPlugin extends Activity implements MethodCallHand
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
 
     if (call.method.equals("getPlatformVersion")) {
+
       result.success("Android " + android.os.Build.VERSION.RELEASE);
+
     } else if (call.method.equals("openOverlay")){
-      assert (call.arguments != null);
+
       Log.d(TAG, "Will show FloatButton");
       final Intent i = new Intent(mContext, FloatButtonService.class);
+
+      i.putExtra("iconPath", (String) call.argument("iconPath"));
+      i.putExtra("packageName", (String) call.argument("packageName"));
+      i.putExtra("activityName", (String) call.argument("activityName"));
+      i.putExtra("notificationTitle", (String) call.argument("notificationTitle"));
+      i.putExtra("notificationText", (String) call.argument("notificationText"));
+
+      Log.i(TAG, "NotificationText" + " - " + call.argument("notificationText"));
+
       mContext.startService(i);
       result.success(true);
+
     } else if (call.method.equals("closeOverlay")){
+
       final Intent i = new Intent(mContext, FloatButtonService.class);
+      Log.d(TAG, "Stopping service");
       mContext.stopService(i);
       result.success("Called close method");
+
     } else if (call.method.equals("checkPermissions")){
+
       if (checkPermission()) {
         result.success("Permissions are granted");
       } else {
         result.success("Permissions are not granted");
       }
+
     } else {
+
       result.notImplemented();
+
     }
   }
 

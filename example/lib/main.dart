@@ -18,15 +18,13 @@ Future<File> getImageFileFromAssets(String path) async {
   return file;
 }
 
+File file;
+PackageInfo packageInfo;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  PackageInfo packageInfo = await PackageInfo.fromPlatform();
-
-  var file = await getImageFileFromAssets('ic_floatbutton.jpg');
-  FloatButtonOverlay.initialize(
-      file.path, packageInfo.packageName, "MainActivity");
-
+  packageInfo = await PackageInfo.fromPlatform();
+  file = await getImageFileFromAssets('caveira.png');
   runApp(MyApp());
 }
 
@@ -71,6 +69,7 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Float Button Overlay - Example'),
+          backgroundColor: Colors.black45,
         ),
         body: Center(
           child: Column(
@@ -81,10 +80,15 @@ class _MyAppState extends State<MyApp> {
               FlatButton(
                 onPressed: () {
                   debugPrint("Vai abrir o overlay");
-                  FloatButtonOverlay.openOverlay;
+                  FloatButtonOverlay.openOverlay(
+                      activityName: 'MainActivity',
+                      iconPath: file.path,
+                      notificationText: "Float Button Overlay ☠️",
+                      notificationTitle: 'Float Button Overlay ☠️',
+                      packageName: packageInfo.packageName);
                 },
                 child: Container(
-                  color: Colors.green,
+                  color: Colors.black45,
                   height: 40,
                   width: 100,
                   child: Center(
