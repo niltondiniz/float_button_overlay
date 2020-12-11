@@ -108,22 +108,20 @@ public class FloatButtonService extends Service {
     }
 
     private void StartAppIntent(String packageName, String activityName) {
-        ComponentName cn = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            cn = new ComponentName(packageName, packageName + "." + activityName);
-        }
-        Intent intent = new Intent();
-        intent.setComponent(cn);
+
+        Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
         try {
             pendingIntent.send();
-        } catch (PendingIntent.CanceledException e) {
+        } catch (PendingIntent.CanceledException e){
             e.printStackTrace();
         }
+
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -140,10 +138,13 @@ public class FloatButtonService extends Service {
                 iconPath = extras.getString("iconPath");
                 notificatitionText = extras.getString("notificationText");
                 notificatitionTitle = extras.getString("notificationTitle");
+
+                Log.i(TAG, extras.toString());
+
             } else {
                 Log.i(TAG, "No intent Extras");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
 
@@ -156,12 +157,11 @@ public class FloatButtonService extends Service {
             private float initialTouchX;
             private float initialTouchY;
             private int initialWidth;
-            private int initialHeight;
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                initialHeight = mFloatingWidget.getHeight();
+                int initialHeight = mFloatingWidget.getHeight();
                 initialWidth = mFloatingWidget.getWidth();
 
                 switch (event.getAction()) {
@@ -303,15 +303,15 @@ public class FloatButtonService extends Service {
             manager.createNotificationChannel(chan);
 
             Notification.Builder notificationBuilder = new Notification.Builder(this, PACKAGE);
-             notificationBuilder.setOngoing(true)
+            notificationBuilder.setOngoing(true)
                     .setContentText(notificatitionText)
                     .setContentTitle(notificatitionTitle)
                     .setCategory(Notification.CATEGORY_SERVICE)
                     .setColor(0xffffffff);
 
-            if(iconPath == null){
+            if (iconPath == null) {
                 notificationBuilder.setSmallIcon(R.drawable.ic_flutter);
-            }else{
+            } else {
                 notificationBuilder.setSmallIcon(Icon.createWithBitmap(BitmapFactory.decodeFile(iconPath)));
             }
 
@@ -328,7 +328,6 @@ public class FloatButtonService extends Service {
     }
 
     private void StartFloatButtonLayout() {
-
 
 
         params = new WindowManager.LayoutParams(
@@ -401,9 +400,9 @@ public class FloatButtonService extends Service {
             builder.setChannelId(PACKAGE); // Channel ID
         }
 
-        if(iconPath == null){
+        if (iconPath == null) {
             builder.setSmallIcon(R.drawable.ic_flutter);
-        }else{
+        } else {
             builder.setSmallIcon(Icon.createWithBitmap(BitmapFactory.decodeFile(iconPath)));
         }
 

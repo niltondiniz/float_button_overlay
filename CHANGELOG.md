@@ -1,3 +1,7 @@
+## 0.2.1
+
+* TODO: Fix: Solved bug on start app on click de float button
+
 ## 0.2.0
 
 * TODO: Intent params on start service to set notification title, notification text, notification small and large icon
