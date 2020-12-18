@@ -1,3 +1,7 @@
+## 0.2.2
+
+* TODO: Feature: Platform Channel method added openAppByPackage
+
 ## 0.2.1
 
 * TODO: Fix: Solved bug on start app on click de float button
