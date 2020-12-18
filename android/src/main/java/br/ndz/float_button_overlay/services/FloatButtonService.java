@@ -247,8 +247,8 @@ public class FloatButtonService extends Service {
         else
             startForeground(NOTIFICATION_ID, getNotification());
 
-        //Starting timer that invoke method on Flutter
-        //startTimer();
+        //Call the callback method on flutter
+        channel.invokeMethod("callback", null);
         return START_STICKY;
     }
 
@@ -278,16 +278,13 @@ public class FloatButtonService extends Service {
     }
 
     @Override
-    public void onDestroy() {
-
-        //Stops the timer
-        //stopTimerTask();
+    public void onDestroy() {        
 
         try {
-            if (mFloatingWidget != null) mWindowManager.removeView(mFloatingWidget);
+            if (mFloatingWidget != null) mWindowManager.removeView(mFloatingWidget);            
             SendBroadcastToFinishApp();
         } catch (Exception e) {
-            //
+            
         }
     }
 
@@ -329,39 +326,43 @@ public class FloatButtonService extends Service {
 
     private void StartFloatButtonLayout() {
 
+        try {
 
-        params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                        ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-                        : WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT);
+            params = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                            ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+                            : WindowManager.LayoutParams.TYPE_PHONE,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSLUCENT);
 
-        params.gravity = Gravity.TOP | Gravity.LEFT;
-        params.x = 0;
-        params.y = 100;
+            params.gravity = Gravity.TOP | Gravity.LEFT;
+            params.x = 0;
+            params.y = 100;
 
-        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(150, 150);
-        lp.addRule(RelativeLayout.CENTER_IN_PARENT);
-        imageView = new ImageView(getApplicationContext());
-        imageView.setLayoutParams(lp);
-        imageView.setImageBitmap(BitmapFactory.decodeFile(iconPath));
-        mFloatingWidget.addView(imageView);
-        mWindowManager.addView(mFloatingWidget, params);
+            mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(150, 150);
+            lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+            imageView = new ImageView(getApplicationContext());
+            imageView.setLayoutParams(lp);
+            imageView.setImageBitmap(BitmapFactory.decodeFile(iconPath));
+            mFloatingWidget.addView(imageView);
+            mWindowManager.addView(mFloatingWidget, params);
 
-        /**
-         * Setting close area height.
-         * The close area corresponds to screen height - 20%
-         *
-         * */
-        display = mWindowManager.getDefaultDisplay();
-        floatButtonsize = new Point();
-        display.getSize(floatButtonsize);
-        maxY = floatButtonsize.y;
-        endArea = maxY - (int) (maxY * 0.20);
+            /**
+             * Setting close area height.
+             * The close area corresponds to screen height - 20%
+             *
+             * */
+            display = mWindowManager.getDefaultDisplay();
+            floatButtonsize = new Point();
+            display.getSize(floatButtonsize);
+            maxY = floatButtonsize.y;
+            endArea = maxY - (int) (maxY * 0.20);
+        }catch (Exception e){
+            Log.e(TAG, "Exception: " + e.getMessage());
+        }
     }
 
     public void initializeTimerTask() {
@@ -371,7 +372,7 @@ public class FloatButtonService extends Service {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        //channel.invokeMethod("send_position", null);
+                        channel.invokeMethod("callback", null);
                         Log.i(TAG, "Send to Flutter");
                     }
                 });

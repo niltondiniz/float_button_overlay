@@ -39,35 +39,21 @@ class FloatButtonOverlay {
     return retorno;
   }
 
-  ///
-
-  /// Initialize
-  /// iconPath: Path of image to set in ImageView of Float Button
-  /// packageName: Package Name of the app you want to open on click
-  /// activityName: Activity on your app that represents the main activity
-  ///
-  /// Two callbacks are defined:
-  /// callback: Called on click, used to open the app
-  /// seticon: Called on show float button, will set the image to ImageView of Float button
-
-  //Future...
-  /*static Future<bool> registerClickToOpenApp(OnClickListener callBackFunction,
-      String packageName, String activityName) async {
+  static Future<bool> registerCallback(OnClickListener callBackFunction) async {
     _channel.setMethodCallHandler((MethodCall call) {
       switch (call.method) {
         case "callback":
-          callBackFunction("");
+          callBackFunction;
           break;
       }
-      final Map<String, dynamic> params = <String, String>{
-        'packageName': packageName,
-        'activityName': activityName
-      };
-
-      print(params);
-      return Future.value(params);
     });
     return true;
-  }*/
+  }
 
+  static Future<bool> openAppByPackage(String packageName) async {
+    final Map<String, String> params = <String, String>{
+      'packageName': packageName,
+    };
+    return await _channel.invokeMethod('openAppByPackage', params);
+  }
 }
