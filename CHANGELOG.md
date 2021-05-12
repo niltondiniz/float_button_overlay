@@ -1,3 +1,7 @@
+## 0.3.0
+
+* TODO: Feature: Added params to control icon and background shape visual
+
 ## 0.2.2
 
 * TODO: Feature: Platform Channel method added openAppByPackage
