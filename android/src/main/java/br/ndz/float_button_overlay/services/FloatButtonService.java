@@ -15,7 +15,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.StateListDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+import android.graphics.drawable.shapes.Shape;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
@@ -67,6 +72,7 @@ public class FloatButtonService extends Service {
     private WindowManager mWindowManager;
     private ImageView imageView;
     private RelativeLayout mFloatingWidget;
+    private View bgFloat;
     private long startClickTime;
     private WindowManager.LayoutParams params;
     private int maxY = 0;
@@ -78,6 +84,12 @@ public class FloatButtonService extends Service {
     private String iconPath;
     private String notificatitionTitle;
     private String notificatitionText;
+    private boolean showTransparentCircle;
+    private int iconWidth;
+    private int iconHeight;
+    private int transpCircleWidth;
+    private int transpCircleHeight;
+
     Display display;
     Point floatButtonsize;
 
@@ -138,6 +150,11 @@ public class FloatButtonService extends Service {
                 iconPath = extras.getString("iconPath");
                 notificatitionText = extras.getString("notificationText");
                 notificatitionTitle = extras.getString("notificationTitle");
+                iconWidth = extras.getInt("iconWidth");
+                iconHeight = extras.getInt("iconHeight");
+                transpCircleWidth = extras.getInt("transpCircleWidth");
+                transpCircleHeight = extras.getInt("transpCircleHeight");
+                showTransparentCircle = extras.getBoolean("showTransparentCircle");
 
                 Log.i(TAG, extras.toString());
 
@@ -342,12 +359,24 @@ public class FloatButtonService extends Service {
             params.y = 100;
 
             mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(150, 150);
+            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(iconWidth, iconHeight);
             lp.addRule(RelativeLayout.CENTER_IN_PARENT);
             imageView = new ImageView(getApplicationContext());
             imageView.setLayoutParams(lp);
             imageView.setImageBitmap(BitmapFactory.decodeFile(iconPath));
             mFloatingWidget.addView(imageView);
+
+            ShapeDrawable shapeBg = new ShapeDrawable(new OvalShape());
+            shapeBg.setIntrinsicHeight(transpCircleHeight);
+            shapeBg.setIntrinsicWidth(transpCircleWidth);
+            shapeBg.setAlpha(10);
+
+            if(!showTransparentCircle){
+                mFloatingWidget.setBackgroundResource(R.drawable.null_selector);
+            }else{
+                mFloatingWidget.setBackground(shapeBg);
+            }
+
             mWindowManager.addView(mFloatingWidget, params);
 
             /**
