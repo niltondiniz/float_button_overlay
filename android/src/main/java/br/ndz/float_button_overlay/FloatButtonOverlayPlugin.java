@@ -77,6 +77,11 @@ public class FloatButtonOverlayPlugin extends Activity implements MethodCallHand
             i.putExtra("activityName", (String) call.argument("activityName"));
             i.putExtra("notificationTitle", (String) call.argument("notificationTitle"));
             i.putExtra("notificationText", (String) call.argument("notificationText"));
+            i.putExtra("showTransparentCircle", (boolean) call.argument("showTransparentCircle"));
+            i.putExtra("iconWidth", (int) call.argument("iconWidth"));
+            i.putExtra("iconHeight", (int) call.argument("iconHeight"));
+            i.putExtra("transpCircleWidth", (int) call.argument("transpCircleWidth"));
+            i.putExtra("transpCircleHeight", (int) call.argument("transpCircleHeight"));
 
             Log.i(TAG, "NotificationText" + " - " + call.argument("notificationText"));
 

@@ -85,7 +85,12 @@ class _MyAppState extends State<MyApp> {
                       iconPath: file.path,
                       notificationText: "Float Button Overlay ☠️",
                       notificationTitle: 'Float Button Overlay ☠️',
-                      packageName: packageInfo.packageName);
+                      packageName: packageInfo.packageName,
+                      showTransparentCircle: false,
+                      iconWidth: 100,
+                      iconHeight: 100,
+                      transpCircleHeight: 180,
+                      transpCircleWidth: 180);
                 },
                 child: Container(
                   color: Colors.black45,

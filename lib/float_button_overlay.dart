@@ -22,13 +22,23 @@ class FloatButtonOverlay {
       String packageName,
       String activityName,
       String notificationText,
-      String notificationTitle}) async {
-    final Map<String, dynamic> params = <String, String>{
+      String notificationTitle,
+      bool showTransparentCircle = true,
+      int iconWidth = 150,
+      int iconHeight = 150,
+      int transpCircleWidth = 200,
+      int transpCircleHeight = 200}) async {
+    final Map<String, dynamic> params = <String, dynamic>{
       'packageName': packageName,
       'activityName': activityName,
       'iconPath': iconPath,
       'notificationTitle': notificationTitle,
-      'notificationText': notificationText
+      'notificationText': notificationText,
+      'showTransparentCircle': showTransparentCircle,
+      'iconWidth': iconWidth,
+      'iconHeight': iconHeight,
+      'transpCircleWidth': transpCircleWidth,
+      'transpCircleHeight': transpCircleHeight
     };
     return await _channel.invokeMethod('openOverlay', params);
   }
