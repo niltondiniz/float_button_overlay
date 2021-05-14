@@ -1,3 +1,13 @@
+## 0.3.1
+
+* Fix:
+    1- Memory leak issue
+    2- platformChannel invoke issue
+
+* Feature:
+    1- Added onClick callback
+    2- Configure icon size, transparent background show/hide and size params
+
 ## 0.3.0
 
 * TODO: Feature: Added params to control icon and background shape visual
