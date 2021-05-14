@@ -4,7 +4,7 @@ A Flutter plugin to keep app service background visible like a Float Action Butt
 
 ## Example of Float Button Overlay
 
-![example](https://raw.githubusercontent.com/niltondiniz/float_button_overlay/main/example/assets/example_3.gif "example")
+![example](https://raw.githubusercontent.com/niltondiniz/float_button_overlay/main/example/assets/example_4.gif "example")
 
 ## Getting Started
 
@@ -16,6 +16,10 @@ A Flutter plugin to keep app service background visible like a Float Action Butt
     void initState() {
       super.initState();
       initPlatformState();
+      
+      //Register callback functions
+      //The Second param is optional
+      FloatButtonOverlay.registerCallback(serviceCallback, onClickCallback);
     }
 
     Future<void> initPlatformState() async {
@@ -40,7 +44,13 @@ A Flutter plugin to keep app service background visible like a Float Action Butt
                       iconPath: file.path,
                       notificationText: "Float Button Overlay ☠️",
                       notificationTitle: 'Float Button Overlay ☠️',
-                      packageName: packageInfo.packageName);
+                      packageName: packageInfo.packageName,
+                      showTransparentCircle: true,
+                      iconWidth: 100,
+                      iconHeight: 100,
+                      transpCircleHeight: 150,
+                      transpCircleWidth: 150,
+                    );
     -Hide: FloatButtonOverlay.closeOverlay;
 
 This project is a starting point for a Flutter
@@ -51,4 +61,6 @@ Android and/or iOS.
 For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+by https://niltondiniz.com
 

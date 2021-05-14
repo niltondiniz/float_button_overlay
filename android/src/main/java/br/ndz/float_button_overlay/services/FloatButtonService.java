@@ -37,7 +37,9 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.JobIntentService;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -47,6 +49,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import br.ndz.float_button_overlay.R;
+import br.ndz.float_button_overlay.FloatButtonOverlayPlugin;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.dart.DartExecutor;
 import io.flutter.plugin.common.MethodChannel;
@@ -245,7 +248,13 @@ public class FloatButtonService extends Service {
                          * */
                         long clickDuration = Calendar.getInstance().getTimeInMillis() - startClickTime;
                         if (clickDuration < MAX_CLICK_DURATION) {
-                            StartAppIntent(packageName, activityName);
+                            if(packageName != null && !packageName.isEmpty()){
+                                StartAppIntent(packageName, activityName);
+                            }
+
+                            Log.i(TAG, "Will click on channel " + CHANNEL);
+                            FloatButtonOverlayPlugin.invokeCallBack("onClickCallback", null);
+                            Log.i(TAG, "Clicked");
                         }
 
                         return false;
@@ -264,8 +273,6 @@ public class FloatButtonService extends Service {
         else
             startForeground(NOTIFICATION_ID, getNotification());
 
-        //Call the callback method on flutter
-        channel.invokeMethod("callback", null);
         return START_STICKY;
     }
 
@@ -298,7 +305,11 @@ public class FloatButtonService extends Service {
     public void onDestroy() {        
 
         try {
-            if (mFloatingWidget != null) mWindowManager.removeView(mFloatingWidget);            
+            if (mFloatingWidget != null) mWindowManager.removeView(mFloatingWidget);
+            mFloatingWidget = null;
+            mWindowManager = null;
+            channel = null;
+            flutterEngine.destroy();
             SendBroadcastToFinishApp();
         } catch (Exception e) {
             
@@ -389,6 +400,7 @@ public class FloatButtonService extends Service {
             display.getSize(floatButtonsize);
             maxY = floatButtonsize.y;
             endArea = maxY - (int) (maxY * 0.20);
+            FloatButtonOverlayPlugin.invokeCallBack("callback", null);
         }catch (Exception e){
             Log.e(TAG, "Exception: " + e.getMessage());
         }

@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 
+void main() => runApp(MyApp());
+
 Future<File> getImageFileFromAssets(String path) async {
   final byteData = await rootBundle.load('assets/$path');
 
@@ -21,12 +23,13 @@ Future<File> getImageFileFromAssets(String path) async {
 File file;
 PackageInfo packageInfo;
 
-Future<void> main() async {
+/*Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  packageInfo = await PackageInfo.fromPlatform();
+  //packageInfo = await PackageInfo.fromPlatform();
   file = await getImageFileFromAssets('caveira.png');
   runApp(MyApp());
-}
+  //FloatButtonOverlay.registerCallback(serviceCallback());
+}*/
 
 class MyApp extends StatefulWidget {
   @override
@@ -35,11 +38,19 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
+  TextEditingController iconWidthController = TextEditingController();
+  TextEditingController iconHeightController = TextEditingController();
+  TextEditingController transpWidth = TextEditingController();
+  TextEditingController transpHeight = TextEditingController();
+  bool showTransparencyBg = false;
+  String triggeredEvent;
 
   @override
   void initState() {
     super.initState();
+    WidgetsFlutterBinding.ensureInitialized();
     initPlatformState();
+    FloatButtonOverlay.registerCallback(serviceCallback, onClickCallback);
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -63,6 +74,14 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  void serviceCallback(String tag) {
+    print(tag);
+  }
+
+  void onClickCallback(String tag) {
+    print(tag);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -71,55 +90,98 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Float Button Overlay - Example'),
           backgroundColor: Colors.black45,
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text('Running on: $_platformVersion\n'),
-              FlatButton(
-                onPressed: () {
-                  debugPrint("Vai abrir o overlay");
-                  FloatButtonOverlay.openOverlay(
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text('Running on: $_platformVersion\n'),
+                TextField(
+                  controller: iconWidthController,
+                  decoration: InputDecoration(labelText: "Icon Width"),
+                ),
+                TextField(
+                  controller: iconHeightController,
+                  decoration: InputDecoration(labelText: "Icon Height"),
+                ),
+                TextField(
+                  controller: transpWidth,
+                  decoration: InputDecoration(labelText: "Transparency Width"),
+                ),
+                TextField(
+                  controller: transpHeight,
+                  decoration: InputDecoration(labelText: "Transparency Height"),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Show Transparency Background?'),
+                    Switch(
+                        value: showTransparencyBg,
+                        onChanged: (value) {
+                          setState(() {
+                            showTransparencyBg = value;
+                          });
+                        }),
+                  ],
+                ),
+                FlatButton(
+                  onPressed: () async {
+                    file = await getImageFileFromAssets('caveira.png');
+                    packageInfo = await PackageInfo.fromPlatform();
+
+                    debugPrint("Vai abrir o overlay");
+                    FloatButtonOverlay.openOverlay(
                       activityName: 'MainActivity',
                       iconPath: file.path,
                       notificationText: "Float Button Overlay ☠️",
                       notificationTitle: 'Float Button Overlay ☠️',
                       packageName: packageInfo.packageName,
-                      showTransparentCircle: false,
-                      iconWidth: 100,
-                      iconHeight: 100,
-                      transpCircleHeight: 180,
-                      transpCircleWidth: 180);
-                },
-                child: Container(
-                  color: Colors.black45,
-                  height: 40,
-                  width: 100,
-                  child: Center(
-                    child: Text(
-                      "Show Button",
+                      showTransparentCircle: showTransparencyBg,
+                      iconWidth: int.parse(iconWidthController.text.isEmpty
+                          ? '100'
+                          : iconWidthController.text),
+                      iconHeight: int.parse(iconHeightController.text.isEmpty
+                          ? '100'
+                          : iconHeightController.text),
+                      transpCircleHeight: int.parse(transpHeight.text.isEmpty
+                          ? '150'
+                          : transpHeight.text),
+                      transpCircleWidth: int.parse(
+                          transpWidth.text.isEmpty ? '150' : transpWidth.text),
+                    );
+                  },
+                  child: Container(
+                    color: Colors.black45,
+                    height: 40,
+                    width: 100,
+                    child: Center(
+                      child: Text(
+                        "Show Button",
+                      ),
                     ),
                   ),
                 ),
-              ),
-              FlatButton(
-                onPressed: () {
-                  debugPrint("Vai fechar o overlay");
-                  FloatButtonOverlay.closeOverlay;
-                },
-                child: Container(
-                  color: Colors.black54,
-                  height: 40,
-                  width: 100,
-                  child: Center(
-                    child: Text(
-                      "Close Button",
+                FlatButton(
+                  onPressed: () {
+                    debugPrint("Vai fechar o overlay");
+                    FloatButtonOverlay.closeOverlay;
+                  },
+                  child: Container(
+                    color: Colors.black54,
+                    height: 40,
+                    width: 100,
+                    child: Center(
+                      child: Text(
+                        "Close Button",
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

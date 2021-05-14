@@ -59,6 +59,10 @@ public class FloatButtonOverlayPlugin extends Activity implements MethodCallHand
         methodChannel.setMethodCallHandler(this);
     }
 
+    public static void invokeCallBack(String type, Object params) {
+        methodChannel.invokeMethod(type, params);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
@@ -71,6 +75,9 @@ public class FloatButtonOverlayPlugin extends Activity implements MethodCallHand
 
             Log.d(TAG, "Will show FloatButton");
             final Intent i = new Intent(mContext, FloatButtonService.class);
+
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
             i.putExtra("iconPath", (String) call.argument("iconPath"));
             i.putExtra("packageName", (String) call.argument("packageName"));
@@ -92,7 +99,7 @@ public class FloatButtonOverlayPlugin extends Activity implements MethodCallHand
 
             final Intent i = new Intent(mContext, FloatButtonService.class);
             Log.d(TAG, "Stopping service");
-            mContext.stopService(i);
+            mContext.stopService(i);            
             result.success("Called close method");
 
         } else if (call.method.equals("openAppByPackage")) {

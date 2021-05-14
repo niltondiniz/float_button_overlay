@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-typedef String OnClickListener(String tag);
+typedef OnClickListener(String tag);
 
 class FloatButtonOverlay {
   static const MethodChannel _channel =
@@ -49,14 +49,20 @@ class FloatButtonOverlay {
     return retorno;
   }
 
-  static Future<bool> registerCallback(OnClickListener callBackFunction) async {
-    _channel.setMethodCallHandler((MethodCall call) {
-      switch (call.method) {
-        case "callback":
-          callBackFunction;
-          break;
-      }
-    });
+  static Future<bool> registerCallback(OnClickListener callBackFunction,
+      [OnClickListener onClickCallback]) async {
+    _channel.setMethodCallHandler(
+      (MethodCall call) {
+        switch (call.method) {
+          case "callback":
+            callBackFunction('openOverlayCallback');
+            break;
+          case "onClickCallback":
+            onClickCallback("onClickCallback");
+            break;
+        }
+      },
+    );
     return true;
   }
 
