@@ -1,6 +1,10 @@
+## 0.3.3
+
+* Licence added
+
 ## 0.3.2
 
-* TODO: 
+* Change version Number
 ## 0.3.1
 
 * Fix:
@@ -13,36 +17,36 @@
 
 ## 0.3.0
 
-* TODO: Feature: Added params to control icon and background shape visual
+* Feature: Added params to control icon and background shape visual
 
 ## 0.2.2
 
-* TODO: Feature: Platform Channel method added openAppByPackage
+* Feature: Platform Channel method added openAppByPackage
 
 ## 0.2.1
 
-* TODO: Fix: Solved bug on start app on click de float button
+* Fix: Solved bug on start app on click de float button
 
 ## 0.2.0
 
-* TODO: Intent params on start service to set notification title, notification text, notification small and large icon
+* Intent params on start service to set notification title, notification text, notification small and large icon
 
 ## 0.1.3
 
-* TODO: onClick visual callback.
+* onClick visual callback.
 
 ## 0.1.2
 
-* TODO: onClick visual callback.
+* onClick visual callback.
 
 ## 0.1.1
 
-* TODO: Readme updated.
+* Readme updated.
 
 ## 0.1.0
 
-* TODO: Readme updated.
+* Readme updated.
 
 ## 0.0.1
 
-* TODO: Describe initial release.
+* Describe initial release.
