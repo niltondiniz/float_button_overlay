@@ -1,5 +1,6 @@
 package br.ndz.float_button_overlay;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -9,6 +10,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
@@ -18,6 +20,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.PermissionChecker;
 
 import br.ndz.float_button_overlay.services.FloatButtonService;
 
@@ -89,6 +94,16 @@ public class FloatButtonOverlayPlugin extends Activity implements MethodCallHand
             i.putExtra("iconHeight", (int) call.argument("iconHeight"));
             i.putExtra("transpCircleWidth", (int) call.argument("transpCircleWidth"));
             i.putExtra("transpCircleHeight", (int) call.argument("transpCircleHeight"));
+            i.putExtra("wsRoom", (String) call.argument("wsRoom"));
+            i.putExtra("wsUrl", (String) call.argument("wsUrl"));
+            i.putExtra("driverId", (String) call.argument("wsRoom"));
+            i.putExtra("recipientId", (String) call.argument("recipientId"));
+            i.putExtra("driverImageProfileUrl", (String) call.argument("driverImageProfileUrl"));
+            i.putExtra("driverName", (String) call.argument("driverName"));
+            i.putExtra("acceptUrl", (String) call.argument("acceptUrl"));
+            i.putExtra("driverPositionUrl", (String) call.argument("driverPositionUrl"));
+            i.putExtra("driverPlate", (String) call.argument("driverPlate"));
+            i.putExtra("driverCarModel", (String) call.argument("driverCarModel"));
 
             Log.i(TAG, "NotificationText" + " - " + call.argument("notificationText"));
 
@@ -120,9 +135,25 @@ public class FloatButtonOverlayPlugin extends Activity implements MethodCallHand
 
         } else if (call.method.equals("checkPermissions")) {
 
+            boolean locationPermissions;
+            boolean notificationPermissions;
+
+            if(checkLocationPermission()){
+                locationPermissions = true;
+            }else{
+                locationPermissions = false;
+            }
+
             if (checkPermission()) {
-                result.success("Permissions are granted");
+                notificationPermissions = true;
+
             } else {
+                notificationPermissions = false;
+            }
+
+            if(notificationPermissions && locationPermissions) {
+                result.success("Permissions are granted");
+            }else{
                 result.success("Permissions are not granted");
             }
 
@@ -140,18 +171,56 @@ public class FloatButtonOverlayPlugin extends Activity implements MethodCallHand
         if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
             if (!Settings.canDrawOverlays(mContext)) {
                 Log.e(TAG, "Float Button Overlay will not work without 'Can Draw Over Other Apps' permission");
-                Toast.makeText(mContext, "Float Button Overlay will not work without 'Can Draw Over Other Apps' permission", Toast.LENGTH_LONG).show();
+                //Toast.makeText(mContext, "Float Button Overlay will not work without 'Can Draw Over Other Apps' permission", Toast.LENGTH_LONG).show();
             }
         }
 
     }
+
+    public boolean checkLocationPermission(){
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (mContext.checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED &&
+                    mContext.checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                            PackageManager.PERMISSION_GRANTED) {
+
+                return true;
+
+            } else {
+                //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                Intent intent = new Intent(Settings.ACTION_LOCALE_SETTINGS,
+                        Uri.parse("package:" + mContext.getPackageName()));
+                if (mActivity == null) {
+                    if (mContext != null) {
+                        mContext.startActivity(intent);
+                        //Toast.makeText(mContext, "Please grant, Can Draw Over Other Apps permission.", Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Can't detect the permission change, as the mActivity is null");
+                    } else {
+                        Log.e(TAG, "'Can Draw Over Other Apps' permission is not granted");
+                        //Toast.makeText(mContext, "Can Draw Over Other Apps permission is required. Please grant it from the app settings", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    mActivity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},1);
+                }
+            }
+        }else{
+            int accessFineLocation = PermissionChecker.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION);
+            int accessCoarseLocation = PermissionChecker.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION);
+            if(accessFineLocation == PermissionChecker.PERMISSION_GRANTED && accessCoarseLocation == PermissionChecker.PERMISSION_GRANTED){
+                return true;
+            }
+        }
+        return false;
+
+    };
 
     public boolean checkPermission() {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
             initNotificationManager();
             if (!notificationManager.areBubblesAllowed()) {
                 Log.e(TAG, "System Alert Window will not work without enabling the android bubbles");
-                Toast.makeText(mContext, "System Alert Window will not work without enabling the android bubbles", Toast.LENGTH_LONG).show();
+                //Toast.makeText(mContext, "System Alert Window will not work without enabling the android bubbles", Toast.LENGTH_LONG).show();
             } else {
                 //TODO to check for higher android versions, post their release
                 Log.d(TAG, "Android bubbles are enabled");
@@ -164,11 +233,11 @@ public class FloatButtonOverlayPlugin extends Activity implements MethodCallHand
                 if (mActivity == null) {
                     if (mContext != null) {
                         mContext.startActivity(intent);
-                        Toast.makeText(mContext, "Please grant, Can Draw Over Other Apps permission.", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(mContext, "Please grant, Can Draw Over Other Apps permission.", Toast.LENGTH_SHORT).show();
                         Log.e(TAG, "Can't detect the permission change, as the mActivity is null");
                     } else {
                         Log.e(TAG, "'Can Draw Over Other Apps' permission is not granted");
-                        Toast.makeText(mContext, "Can Draw Over Other Apps permission is required. Please grant it from the app settings", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(mContext, "Can Draw Over Other Apps permission is required. Please grant it from the app settings", Toast.LENGTH_LONG).show();
                     }
                 } else {
                     mActivity.startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE);
@@ -189,7 +258,7 @@ public class FloatButtonOverlayPlugin extends Activity implements MethodCallHand
             return true;
         } else {
             Log.e(TAG, "System Alert Window will not work without enabling the android bubbles");
-            Toast.makeText(mContext, "Enable android bubbles in the developer options, for System Alert Window to work", Toast.LENGTH_LONG).show();
+            //Toast.makeText(mContext, "Enable android bubbles in the developer options, for System Alert Window to work", Toast.LENGTH_LONG).show();
             return false;
         }
     }
@@ -208,6 +277,10 @@ public class FloatButtonOverlayPlugin extends Activity implements MethodCallHand
             }
             notificationManager = mContext.getSystemService(NotificationManager.class);
         }
+    }
+
+    private void initPermissionManager(){
+
     }
 
 }

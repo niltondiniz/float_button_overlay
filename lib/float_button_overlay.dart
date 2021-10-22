@@ -17,17 +17,28 @@ class FloatButtonOverlay {
     _channel.invokeMethod('checkPermissions');
   }
 
-  static Future<bool> openOverlay(
-      {String iconPath,
-      String packageName,
-      String activityName,
-      String notificationText,
-      String notificationTitle,
-      bool showTransparentCircle = true,
-      int iconWidth = 150,
-      int iconHeight = 150,
-      int transpCircleWidth = 200,
-      int transpCircleHeight = 200}) async {
+  static Future<bool> openOverlay({
+    String? iconPath,
+    String? packageName,
+    String? activityName,
+    String? notificationText,
+    String? notificationTitle,
+    bool showTransparentCircle = true,
+    int iconWidth = 150,
+    int iconHeight = 150,
+    int transpCircleWidth = 200,
+    int transpCircleHeight = 200,
+    String? wsRoom,
+    String? wsUrl,
+    String? driverId,
+    String? recipientId,
+    String? driverImageProfileUrl,
+    String? driverName,
+    String? acceptUrl,
+    String? driverPositionUrl,
+    String? driverPlate,
+    String? driverCarModel,
+  }) async {
     final Map<String, dynamic> params = <String, dynamic>{
       'packageName': packageName,
       'activityName': activityName,
@@ -38,7 +49,17 @@ class FloatButtonOverlay {
       'iconWidth': iconWidth,
       'iconHeight': iconHeight,
       'transpCircleWidth': transpCircleWidth,
-      'transpCircleHeight': transpCircleHeight
+      'transpCircleHeight': transpCircleHeight,
+      'wsRoom': wsRoom,
+      'wsUrl': wsUrl,
+      'driverId': driverId,
+      'recipientId': recipientId,
+      'driverImageProfileUrl': driverImageProfileUrl,
+      'driverName': driverName,
+      'acceptUrl': acceptUrl,
+      'driverPositionUrl': driverPositionUrl,
+      'driverPlate': driverPlate,
+      'driverCarModel': driverCarModel,
     };
     return await _channel.invokeMethod('openOverlay', params);
   }
@@ -50,15 +71,15 @@ class FloatButtonOverlay {
   }
 
   static Future<bool> registerCallback(OnClickListener callBackFunction,
-      [OnClickListener onClickCallback]) async {
+      [OnClickListener? onClickCallback]) async {
     _channel.setMethodCallHandler(
-      (MethodCall call) {
-        switch (call.method) {
+      (MethodCall? call) async {
+        switch (call!.method) {
           case "callback":
             callBackFunction('openOverlayCallback');
             break;
           case "onClickCallback":
-            onClickCallback("onClickCallback");
+            onClickCallback!("onClickCallback");
             break;
         }
       },

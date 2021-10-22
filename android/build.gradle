@@ -33,7 +33,7 @@ android {
     compileSdkVersion 29
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 24
     }
     lintOptions {
         disable 'InvalidPackage'
@@ -44,6 +44,13 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     implementation 'androidx.core:core:1.2.0'
+    implementation ('io.socket:socket.io-client:2.0.1') {
+        // excluding org.json which is provided by Android
+        exclude group: 'org.json', module: 'json'
+    }
+    implementation 'tech.gusavila92:java-android-websocket-client:1.2.2'
+    implementation 'com.skyfishjy.ripplebackground:library:1.0.1'
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
     //api "io.flutter:flutter_embedding_debug:1.0.0-d1bc06f032f9d6c148ea6b96b48261d6f545004f"
 }
 

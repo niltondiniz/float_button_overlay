@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/accept_button"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="32dp"
+    android:background="@drawable/rectangle_rounded_3"
+    android:clickable="true"
+    android:onClick="acceptClick"
+    android:orientation="horizontal">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:clickable="true"
+        android:gravity="center_horizontal"
+        android:onClick="acceptClick"
+        android:text="ACEITAR CORRIDA"
+        android:textAlignment="center"
+        android:textColor="#282828"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+
+</LinearLayout>

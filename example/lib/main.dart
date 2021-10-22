@@ -20,8 +20,8 @@ Future<File> getImageFileFromAssets(String path) async {
   return file;
 }
 
-File file;
-PackageInfo packageInfo;
+File? file;
+PackageInfo? packageInfo;
 
 /*Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,7 +43,7 @@ class _MyAppState extends State<MyApp> {
   TextEditingController transpWidth = TextEditingController();
   TextEditingController transpHeight = TextEditingController();
   bool showTransparencyBg = false;
-  String triggeredEvent;
+  String? triggeredEvent;
 
   @override
   void initState() {
@@ -135,10 +135,10 @@ class _MyAppState extends State<MyApp> {
                     debugPrint("Vai abrir o overlay");
                     FloatButtonOverlay.openOverlay(
                       activityName: 'MainActivity',
-                      iconPath: file.path,
+                      iconPath: file!.path,
                       notificationText: "Float Button Overlay ☠️",
                       notificationTitle: 'Float Button Overlay ☠️',
-                      packageName: packageInfo.packageName,
+                      packageName: packageInfo!.packageName,
                       showTransparentCircle: showTransparencyBg,
                       iconWidth: int.parse(iconWidthController.text.isEmpty
                           ? '100'
@@ -150,7 +150,20 @@ class _MyAppState extends State<MyApp> {
                           ? '150'
                           : transpHeight.text),
                       transpCircleWidth: int.parse(
-                          transpWidth.text.isEmpty ? '150' : transpWidth.text),
+                        transpWidth.text.isEmpty ? '150' : transpWidth.text,
+                      ),
+                      wsRoom: '1',
+                      wsUrl: 'ws://stage.applux.com.br:3042',
+                      driverId: '1',
+                      driverName: 'Android Service',
+                      driverImageProfileUrl:
+                          'https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg',
+                      recipientId: 're_ckupykssa01wg0o9tutya687z',
+                      acceptUrl: 'http://stage.applux.com.br:3000/accept-trip',
+                      driverPositionUrl:
+                          'http://stage.applux.com.br:3000/driver-position',
+                      driverPlate: 'KQU-3B46',
+                      driverCarModel: 'Chevrolet Cruse',
                     );
                   },
                   child: Container(

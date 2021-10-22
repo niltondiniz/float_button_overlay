@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/reject_button"
+    android:layout_width="221dp"
+    android:layout_height="46dp"
+    android:layout_gravity="center"
+    android:layout_marginStart="-0.12dp"
+    android:background="@drawable/rectangle_rounded"
+    android:layout_marginBottom="26dp"
+    android:elevation="36dp"
+    android:orientation="horizontal"
+    android:onClick="rejectClick"
+    android:clickable="true"
+    android:gravity="center">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="rejectClick"
+        android:clickable="true"
+        android:src="@drawable/ic_baseline_close_24"/>
+
+    <TextView
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="10sp"
+        android:autoSizeMaxTextSize="100sp"
+        android:autoSizeStepGranularity="1sp"
+        android:layout_width="75dp"
+        android:layout_height="36dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="RECUSAR"
+        android:textColor="#FFFFFF"
+        android:textAlignment="center"
+        android:onClick="rejectClick"
+        android:clickable="true"
+        android:textStyle="bold" />
+
+</LinearLayout>
