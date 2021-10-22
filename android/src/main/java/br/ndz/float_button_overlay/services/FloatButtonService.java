@@ -241,8 +241,16 @@ public class FloatButtonService extends Service implements LocationListener {
 
         Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pendingIntent =
-                PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+
+        PendingIntent pendingIntent;
+
+        if (Build.VERSION.SDK_INT >= 31) {
+            pendingIntent =
+                    PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        }else{
+            pendingIntent =
+                    PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+        }
         try {
             pendingIntent.send();
         } catch (PendingIntent.CanceledException e) {
