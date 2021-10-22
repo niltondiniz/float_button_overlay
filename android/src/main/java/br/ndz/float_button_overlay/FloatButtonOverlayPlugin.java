@@ -124,7 +124,7 @@ public class FloatButtonOverlayPlugin extends Activity implements MethodCallHand
             Intent intent = mContext.getPackageManager().getLaunchIntentForPackage(packageName);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             PendingIntent pendingIntent =
-                    PendingIntent.getActivity(mContext, 0, intent, 0);
+                    PendingIntent.getActivity(mContext, 0, intent, 0, PendingIntent.FLAG_IMMUTABLE);
             try {
                 pendingIntent.send();
                 result.success(true);
