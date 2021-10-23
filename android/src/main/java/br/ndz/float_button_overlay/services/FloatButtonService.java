@@ -133,7 +133,7 @@ public class FloatButtonService extends Service implements LocationListener {
 
     private final IBinder mBinder = new LocalBinder();
     private static final int NOTIFICATION_ID = 1326875;
-    Socket mSocket;
+    java.net.Socket mSocket;
     MediaPlayer mediaPlayer;
 
     void websocketHandler() {
@@ -445,6 +445,9 @@ public class FloatButtonService extends Service implements LocationListener {
 
         try {
             if (mFloatingWidget != null) mWindowManager.removeView(mFloatingWidget);
+            stopTimerTask();
+            locationManager.removeUpdates(this);
+            mSocket.close();
             mFloatingWidget = null;
             mWindowManager = null;
             channel = null;
