@@ -133,7 +133,7 @@ public class FloatButtonService extends Service implements LocationListener {
 
     private final IBinder mBinder = new LocalBinder();
     private static final int NOTIFICATION_ID = 1326875;
-    java.net.Socket mSocket;
+    Socket mSocket;
     MediaPlayer mediaPlayer;
 
     void websocketHandler() {
