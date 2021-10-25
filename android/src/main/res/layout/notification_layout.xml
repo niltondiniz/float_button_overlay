@@ -50,7 +50,7 @@
                 android:id="@+id/content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:rb_color="#FFCB58"
+                app:rb_color="#55FFCB58"
                 app:rb_duration="2000"
                 app:rb_radius="64dp"
                 app:rb_rippleAmount="5"
