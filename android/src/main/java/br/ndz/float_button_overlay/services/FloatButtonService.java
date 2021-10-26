@@ -1,6 +1,7 @@
 package br.ndz.float_button_overlay.services;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION;
+import static java.time.Instant.now;
 import static br.ndz.float_button_overlay.utils.Constants.BROADCAST_FINISH_APP;
 import static br.ndz.float_button_overlay.utils.Constants.CHANNEL;
 import static br.ndz.float_button_overlay.utils.Constants.MAX_CLICK_DURATION;
@@ -56,12 +57,17 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import br.ndz.float_button_overlay.FloatButtonOverlayPlugin;
 import br.ndz.float_button_overlay.R;
+import br.ndz.float_button_overlay.utils.ApplicationMonitor;
 import br.ndz.float_button_overlay.utils.AsyncBitmapDownload;
 import br.ndz.float_button_overlay.utils.AsyncHttpPost;
 import br.ndz.float_button_overlay.utils.AsyncResponse;
@@ -265,150 +271,29 @@ public class FloatButtonService extends Service implements LocationListener {
 
         Log.i(TAG, "Service started");
         context = getApplicationContext();
-
-        try {
-
-            Bundle extras = intent.getExtras();
-            if (extras != null) {
-                Log.i(TAG, extras.toString());
-                packageName = extras.getString("packageName");
-                activityName = extras.getString("activityName");
-                iconPath = extras.getString("iconPath");
-                notificatitionText = extras.getString("notificationText");
-                notificatitionTitle = extras.getString("notificationTitle");
-                iconWidth = extras.getInt("iconWidth");
-                iconHeight = extras.getInt("iconHeight");
-                transpCircleWidth = extras.getInt("transpCircleWidth");
-                transpCircleHeight = extras.getInt("transpCircleHeight");
-                showTransparentCircle = extras.getBoolean("showTransparentCircle");
-                wsRoom = extras.getString("wsRoom");
-                wsUrl = extras.getString("wsUrl");
-                driverId = extras.getString("wsRoom");
-                recipientId = extras.getString("recipientId");
-                driverImageProfileUrl = extras.getString("driverImageProfileUrl");
-                driverName = extras.getString("driverName");
-                acceptUrl = extras.getString("acceptUrl");
-                driverPositionUrl = extras.getString("driverPositionUrl");
-                driverPlate = extras.getString("driverPlate");
-                driverCarModel = extras.getString("driverCarModel");
-
-                Log.i(TAG, extras.toString());
-
-            } else {
-                Log.i(TAG, "No intent Extras");
-            }
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-        }
-
-        StartFloatButtonLayout();
-
-        mFloatingWidget.setOnTouchListener(new View.OnTouchListener() {
-
-            private int initialX;
-            private int initialY;
-            private float initialTouchX;
-            private float initialTouchY;
-            private int initialWidth;
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                int initialHeight = mFloatingWidget.getHeight();
-                initialWidth = mFloatingWidget.getWidth();
-
-                switch (event.getAction()) {
-
-                    case MotionEvent.ACTION_DOWN:
-
-                        initialX = params.x;
-                        initialY = params.y;
-                        initialTouchX = event.getRawX();
-                        initialTouchY = event.getRawY();
-
-                        animateButton(1.1f, 1.1f);
-
-                        //Getting press time
-                        startClickTime = Calendar.getInstance().getTimeInMillis();
-                        return false;
-
-                    case MotionEvent.ACTION_UP:
-
-                        int Xdiff = (int) (event.getRawX() - initialTouchX);
-                        int Ydiff = (int) (event.getRawY() - initialTouchY);
-
-                        animateButton(1f, 1f);
-
-                        if (params.y >= endArea) {
-                            params.alpha = 1;
-
-                            final Handler handler = new Handler();
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                    Log.i(TAG, "Runnable: Alpha Decrease" + params.alpha);
-                                    if (params.alpha > 0) {
-                                        params.alpha = (float) (params.alpha - 0.06);
-                                        params.x = params.x + 50;
-                                        try {
-                                            mWindowManager.updateViewLayout(mFloatingWidget, params);
-                                        } catch (Exception e) {
-                                            Log.i(TAG, "An error has occurred: " + e.getMessage() + "StackTrace: " + e.getStackTrace());
-                                        }
-
-                                        Log.i(TAG, "Alpha Decrease" + params.alpha);
-                                        handler.postDelayed(this, 1);
-                                    }
-                                    Log.i(TAG, "Runnable: Finished");
-
-                                    if (params.alpha <= 0) {
-
-                                        SendBroadcastToFinishApp();
-
-                                        Log.i(TAG, "Stopping service");
-                                        stopSelf();
-                                        stopForeground(true);
-                                        android.os.Process.killProcess(android.os.Process.myPid());
-                                    }
-
-                                }
-                            });
-                        }
-
-                        /**
-                         * Starts app on click in Float Button
-                         * */
-                        long clickDuration = Calendar.getInstance().getTimeInMillis() - startClickTime;
-                        if (clickDuration < MAX_CLICK_DURATION) {
-                            if (packageName != null && !packageName.isEmpty()) {
-                                StartAppIntent(packageName, activityName);
-                            }
-
-                            Log.i(TAG, "Will click on channel " + CHANNEL);
-                            FloatButtonOverlayPlugin.invokeCallBack("onClickCallback", null);
-                            Log.i(TAG, "Clicked");
-                        }
-
-                        return false;
-                    case MotionEvent.ACTION_MOVE:
-                        params.x = initialX + (int) (event.getRawX() - initialTouchX);
-                        params.y = initialY + (int) (event.getRawY() - initialTouchY);
-                        mWindowManager.updateViewLayout(mFloatingWidget, params);
-                        return false;
-                }
-                return false;
-            }
-        });
+        Bundle extras = intent.getExtras();
+        notificatitionText = extras.getString("notificationText");
+        notificatitionTitle = extras.getString("notificationTitle");
+        iconPath = extras.getString("iconPath");
+        wsUrl = extras.getString("wsUrl");
+        wsRoom = extras.getString("wsRoom");
+        driverPlate = extras.getString("driverPlate");
+        driverCarModel = extras.getString("driverCarModel");
+        driverName = extras.getString("driverName");
+        driverId = extras.getString("driverId");
+        driverImageProfileUrl = extras.getString("driverImageProfileUrl");
+        driverPositionUrl = extras.getString("driverPositionUrl");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            startMyOwnForeground();
+            startMyOwnForeground(notificatitionText,
+                    notificatitionTitle,
+                    iconPath);
         else
-            startForeground(FOREGROUND_SERVICE_TYPE_LOCATION, getNotification());
+            startForeground(FOREGROUND_SERVICE_TYPE_LOCATION, getNotification(notificatitionText,
+                    notificatitionTitle,
+                    iconPath));
 
-        startTimer();
-        criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-        criteria.setPowerRequirement(Criteria.POWER_LOW);
+        startTimer();        
         this.locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         this.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 4000, 10, this);
         websocketHandler();
@@ -418,11 +303,18 @@ public class FloatButtonService extends Service implements LocationListener {
     @Override
     public IBinder onBind(Intent intent) {
 
+        Bundle extras = intent.getExtras();
+
         Log.i(TAG, "in onBind()");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            startMyOwnForeground();
+            startMyOwnForeground(extras.getString("notificationText"),
+                    extras.getString("notificationTitle"),
+                    extras.getString("iconPath")
+            );
         else
-            startForeground(NOTIFICATION_ID, getNotification());
+            startForeground(NOTIFICATION_ID, getNotification(extras.getString("notificationText"),
+                    extras.getString("notificationTitle"),
+                    extras.getString("iconPath")));
 
         return mBinder;
     }
@@ -444,12 +336,9 @@ public class FloatButtonService extends Service implements LocationListener {
     public void onDestroy() {
 
         try {
-            if (mFloatingWidget != null) mWindowManager.removeView(mFloatingWidget);
             stopTimerTask();
             locationManager.removeUpdates(this);
             mSocket.close();
-            mFloatingWidget = null;
-            mWindowManager = null;
             channel = null;
             flutterEngine.destroy();
             SendBroadcastToFinishApp();
@@ -458,11 +347,11 @@ public class FloatButtonService extends Service implements LocationListener {
         }
     }
 
-    private void startMyOwnForeground() {
+    private void startMyOwnForeground(String notificationText, String notificationTitle, String iconPath) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            NotificationChannel chan = new NotificationChannel(PACKAGE, notificatitionTitle, NotificationManager.IMPORTANCE_NONE);
+            NotificationChannel chan = new NotificationChannel(PACKAGE, notificationTitle, NotificationManager.IMPORTANCE_NONE);
             chan.setLightColor(Color.YELLOW);
             chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -471,8 +360,8 @@ public class FloatButtonService extends Service implements LocationListener {
 
             Notification.Builder notificationBuilder = new Notification.Builder(this, PACKAGE);
             notificationBuilder.setOngoing(true)
-                    .setContentText(notificatitionText)
-                    .setContentTitle(notificatitionTitle)
+                    .setContentText(notificationText)
+                    .setContentTitle(notificationTitle)
                     .setCategory(Notification.CATEGORY_SERVICE)
                     .setColor(0xffffffff);
 
@@ -701,7 +590,7 @@ public class FloatButtonService extends Service implements LocationListener {
                         if (locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) != null) {
                             //channel.invokeMethod("callback", null);
                             location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                            Log.i(TAG, "Latitude: " + String.valueOf(location.getLatitude()) + " Longitude: " + String.valueOf(location.getLongitude()));
+                            Log.i(TAG, Calendar.getInstance().getTime() + ": Latitude: " + String.valueOf(location.getLatitude()) + " Longitude: " + String.valueOf(location.getLongitude()));
 
                             //Send driver_position
                             sendDriverPosition();
@@ -712,7 +601,7 @@ public class FloatButtonService extends Service implements LocationListener {
         };
     }
 
-    private Notification getNotification() {
+    private Notification getNotification(String notificationText, String notificationTitle, String iconPath) {
 
         Notification.Builder builder = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
