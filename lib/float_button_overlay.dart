@@ -132,7 +132,7 @@ class FloatButtonOverlay {
             callBackFunction('openOverlayCallback');
             break;
           case "onClickCallback":
-            onClickCallback!("onClickCallback");
+            onClickCallback!(call.arguments);
             break;
         }
       },

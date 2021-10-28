@@ -243,7 +243,7 @@ public class FloatButtonService extends Service implements LocationListener {
                 .start();
     }
 
-    private void StartAppIntent(String packageName, String activityName) {
+    private void startAppIntent(String packageName, String activityName) {
 
         Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -432,6 +432,9 @@ public class FloatButtonService extends Service implements LocationListener {
             mediaPlayer.stop();
             mWindowManager2.removeView(mFloatingWidget2);
             cdtTimer.cancel();
+
+            channel.invokeMethod("onClickCallback", tripObject.getString("TRIPID"));
+            startAppIntent(packageName, activityName);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -694,5 +697,6 @@ public class FloatButtonService extends Service implements LocationListener {
             return FloatButtonService.this;
         }
     }
+
 
 }
