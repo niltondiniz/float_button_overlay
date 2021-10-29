@@ -116,8 +116,12 @@ public class FloatDisplay {
     }
 
     public void closeBubble(){
-        if (mFloatingWidget != null) mWindowManager.removeView(mFloatingWidget);
-        isButtonDisplayed = false;
+        try {
+            if (mFloatingWidget != null) mWindowManager.removeView(mFloatingWidget);
+            isButtonDisplayed = false;
+        }catch (Exception e){
+            
+        }
     }
 
 
