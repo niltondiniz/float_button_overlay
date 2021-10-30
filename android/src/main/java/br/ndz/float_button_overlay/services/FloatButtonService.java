@@ -283,6 +283,8 @@ public class FloatButtonService extends Service implements LocationListener {
         driverId = extras.getString("driverId");
         driverImageProfileUrl = extras.getString("driverImageProfileUrl");
         driverPositionUrl = extras.getString("driverPositionUrl");
+        packageName = extras.getString("packageName");
+        activityName = extras.getString("activityName");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             startMyOwnForeground(notificatitionText,
@@ -434,7 +436,11 @@ public class FloatButtonService extends Service implements LocationListener {
             cdtTimer.cancel();
 
             channel.invokeMethod("onClickCallback", tripObject.getString("TRIPID"));
-            startAppIntent(packageName, activityName);
+
+            ApplicationMonitor applicationMonitor = new ApplicationMonitor();
+            if(!applicationMonitor.isAppRunning(context, packageName)){
+                startAppIntent(packageName, activityName);
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();

@@ -120,7 +120,7 @@ public class FloatDisplay {
             if (mFloatingWidget != null) mWindowManager.removeView(mFloatingWidget);
             isButtonDisplayed = false;
         }catch (Exception e){
-            
+
         }
     }
 
