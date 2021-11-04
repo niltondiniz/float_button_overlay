@@ -1,7 +1,6 @@
 package br.ndz.float_button_overlay.services;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION;
-import static java.time.Instant.now;
 import static br.ndz.float_button_overlay.utils.Constants.BROADCAST_FINISH_APP;
 import static br.ndz.float_button_overlay.utils.Constants.CHANNEL;
 import static br.ndz.float_button_overlay.utils.Constants.MAX_CLICK_DURATION;
@@ -57,9 +56,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
@@ -285,6 +281,7 @@ public class FloatButtonService extends Service implements LocationListener {
         driverPositionUrl = extras.getString("driverPositionUrl");
         packageName = extras.getString("packageName");
         activityName = extras.getString("activityName");
+        acceptUrl = extras.getString("acceptUrl");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             startMyOwnForeground(notificatitionText,
@@ -422,7 +419,7 @@ public class FloatButtonService extends Service implements LocationListener {
             tripObject.put("DRIVERLON", location.getLongitude());
             tripObject.put("RECIPIENTID", recipientId);
             tripObject.put("DRIVERNAME", driverName);
-            tripObject.put("DRIVERID", driverId);
+            tripObject.put("DRIVERID", Integer.parseInt(driverId));
             tripObject.put("EVENTNAME", "ACCEPT_TRIP");
             tripObject.put("ORIGIN", "DRIVER");
             tripObject.put("STATUS", "ENROUTE_TO_PASSENGER");
@@ -431,11 +428,18 @@ public class FloatButtonService extends Service implements LocationListener {
             AsyncHttpPost asyncHttpPost = new AsyncHttpPost(tripObject, acceptUrl);
             asyncHttpPost.execute();
 
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @SuppressLint("MissingPermission")
+                @Override
+                public void run() {
+                    Log.i(TAG,"Vai invocar o metodo onClickCallback");
+                    channel.invokeMethod("onClickCallback", tripObject.toString() );
+                }
+            });
+
             mediaPlayer.stop();
             mWindowManager2.removeView(mFloatingWidget2);
             cdtTimer.cancel();
-
-            channel.invokeMethod("onClickCallback", tripObject.getString("TRIPID"));
 
             ApplicationMonitor applicationMonitor = new ApplicationMonitor();
             if(!applicationMonitor.isAppRunning(context, packageName)){
@@ -450,7 +454,7 @@ public class FloatButtonService extends Service implements LocationListener {
     }
 
     public void sendDriverPosition() {
-        JSONObject data = new JSONObject();
+        final JSONObject data = new JSONObject();
 
         try {
             data.put("EVENTNAME", "DRIVER_POSITION");
