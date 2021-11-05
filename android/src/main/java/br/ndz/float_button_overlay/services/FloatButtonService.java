@@ -422,7 +422,7 @@ public class FloatButtonService extends Service implements LocationListener {
             tripObject.put("DRIVERID", Integer.parseInt(driverId));
             tripObject.put("EVENTNAME", "ACCEPT_TRIP");
             tripObject.put("ORIGIN", "DRIVER");
-            tripObject.put("STATUS", "ENROUTE_TO_PASSENGER");
+            tripObject.put("STATUS", "DRIVER_ENROUTE");
             tripObject.put("DRIVERIMAGEPROFILEURL", driverImageProfileUrl);
 
             AsyncHttpPost asyncHttpPost = new AsyncHttpPost(tripObject, acceptUrl);
