@@ -177,7 +177,7 @@ public class FloatButtonService extends Service implements LocationListener {
                             public void run() {
                                 try {
                                     String estimatedPrice = "R$ " + String.format("%.2f", tripObject.getDouble("ESTIMATEDPRICE")).replace(".", ",");
-                                    String distance = String.format("%.3f", tripObject.getDouble("DISTANCEM") / 1000) + " Km";
+                                    String distance = String.format("%.1f", tripObject.getDouble("DISTANCEM") / 1000) + " Km";
                                     String duration = String.format("%.0f", tripObject.getDouble("DURATION") / 60) + " min";
 
                                     secondScreen(tripObject.getString("PASSENGERIMAGEPROFILEURL"), distance,
