@@ -462,12 +462,12 @@ public class FloatButtonService extends Service implements LocationListener {
             data.put("STATUS", "WANDERING");
             data.put("DRIVERPLATE", driverPlate);
             data.put("DRIVERCARMODEL", driverCarModel);
-            data.put("STATUS", "WANDERING");
             data.put("DRIVERNAME", driverName);
             data.put("DRIVERLAT", location.getLatitude());
             data.put("DRIVERLON", location.getLongitude());
             data.put("DRIVERID", driverId);
             data.put("DRIVERPROFILEURLIMAGE", driverImageProfileUrl);
+            data.put("RECIPIENTID", recipientId);
 
             asyncHttpPost = new AsyncHttpPost(data, driverPositionUrl);
             asyncHttpPost.execute();
