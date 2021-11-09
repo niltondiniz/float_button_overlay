@@ -282,6 +282,7 @@ public class FloatButtonService extends Service implements LocationListener {
         packageName = extras.getString("packageName");
         activityName = extras.getString("activityName");
         acceptUrl = extras.getString("acceptUrl");
+        recipientId = extras.getString("recipientId");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             startMyOwnForeground(notificatitionText,
