@@ -508,24 +508,16 @@ public class FloatButtonService extends Service implements LocationListener {
                     @Override
                     public void processFinish(Object output) {
                         passengerProfileImageWidget.setImageBitmap((Bitmap) output);
-
-                        try {
-                            mWindowManager2.addView(mFloatingWidget2, params2);
-                        } catch (Exception e) {
-
-                        }
-                        mWindowManager2.updateViewLayout(mFloatingWidget2, params2);
-                        rippleBackground.startRippleAnimation();
-                        playSound();
-                        startTimeToCloseNotification();
                     }
                 });
                 asyncBitmapDownload.execute(profileUrl);
-            } else {
-                mWindowManager2.updateViewLayout(mFloatingWidget2, params2);
-                playSound();
             }
 
+            mWindowManager2.addView(mFloatingWidget2, params2);
+            mWindowManager2.updateViewLayout(mFloatingWidget2, params2);
+            rippleBackground.startRippleAnimation();
+            playSound();
+            startTimeToCloseNotification();
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
