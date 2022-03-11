@@ -69,6 +69,7 @@ public class FloatDisplay {
     private String driverName;
     private String driverPlate;
     private String driverCarModel;
+    private String driverRateValue;
     private String acceptUrl;
     private String driverPositionUrl;
     private String packageName;
