@@ -212,6 +212,7 @@ public class FloatDisplay {
             driverPositionUrl = extras.getString("driverPositionUrl");
             driverPlate = extras.getString("driverPlate");
             driverCarModel = extras.getString("driverCarModel");
+            driverRateValue = extras.getString("driverRateValue");
 
             Log.i(TAG, extras.toString());
         }

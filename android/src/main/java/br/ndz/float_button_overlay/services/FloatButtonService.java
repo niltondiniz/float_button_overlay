@@ -114,8 +114,9 @@ public class FloatButtonService extends Service implements LocationListener {
     private String recipientId;
     private String driverImageProfileUrl;
     private String driverName;
-    private String driverPlate;
+    private String driverPlate;    
     private String driverCarModel;
+    private String driverRateValue;
     private String acceptUrl;
     private String driverPositionUrl;
     private int iconWidth;
@@ -275,6 +276,7 @@ public class FloatButtonService extends Service implements LocationListener {
         wsRoom = extras.getString("wsRoom");
         driverPlate = extras.getString("driverPlate");
         driverCarModel = extras.getString("driverCarModel");
+        driverRateValue = extras.getString("driverRateValue");;
         driverName = extras.getString("driverName");
         driverId = extras.getString("driverId");
         driverImageProfileUrl = extras.getString("driverImageProfileUrl");
@@ -425,6 +427,9 @@ public class FloatButtonService extends Service implements LocationListener {
             tripObject.put("ORIGIN", "DRIVER");
             tripObject.put("STATUS", "DRIVER_ENROUTE");
             tripObject.put("DRIVERIMAGEPROFILEURL", driverImageProfileUrl);
+            tripObject.put("DRIVERCARMODEL", driverCarModel);
+            tripObject.put("DRIVERPLATE", driverPlate);
+            tripObject.put("DRIVERRATEVALUE", driverRateValue);
 
             AsyncHttpPost asyncHttpPost = new AsyncHttpPost(tripObject, acceptUrl);
             asyncHttpPost.execute();

@@ -349,6 +349,7 @@ public class FloatButtonOverlayPlugin extends Activity implements MethodCallHand
             openServiceIntent.putExtra("driverPositionUrl", (String) call.argument("driverPositionUrl"));
             openServiceIntent.putExtra("driverPlate", (String) call.argument("driverPlate"));
             openServiceIntent.putExtra("driverCarModel", (String) call.argument("driverCarModel"));
+            openServiceIntent.putExtra("driverRateValue", (String) call.argument("driverRateValue"));
 
             packageName = call.argument("packageName");
 

@@ -38,6 +38,7 @@ class FloatButtonOverlay {
     String? driverPositionUrl,
     String? driverPlate,
     String? driverCarModel,
+    String? driverRateValue,
   }) async {
     final Map<String, dynamic> params = <String, dynamic>{
       'packageName': packageName,
@@ -60,6 +61,7 @@ class FloatButtonOverlay {
       'driverPositionUrl': driverPositionUrl,
       'driverPlate': driverPlate,
       'driverCarModel': driverCarModel,
+      'driverRateValue': driverRateValue,
     };
     return await _channel.invokeMethod('startService', params);
   }
@@ -85,6 +87,7 @@ class FloatButtonOverlay {
     String? driverPositionUrl,
     String? driverPlate,
     String? driverCarModel,
+    String? driverRateValue,
   }) async {
     final Map<String, dynamic> params = <String, dynamic>{
       'packageName': packageName,
@@ -107,6 +110,7 @@ class FloatButtonOverlay {
       'driverPositionUrl': driverPositionUrl,
       'driverPlate': driverPlate,
       'driverCarModel': driverCarModel,
+      'driverRateValue': driverRateValue,
     };
     return await _channel.invokeMethod('openOverlay', params);
   }
